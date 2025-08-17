@@ -5,7 +5,7 @@ import (
 	"strings"
 	"bufio"
 	"os"
-	"github.com/max-durnea/pokedexcli/pokeapi"
+	"github.com/max-durnea/pokedexcli/internal/pokeapi"
 )
 type command struct {
 	name string
@@ -96,7 +96,7 @@ func commandMap(cfg *Config) error {
 }
 func commandBmap(cfg *Config) error {
 	if(cfg.Next== "https://pokeapi.co/api/v2/location-area/?offset=20&limit=20") {
-		fmt.Println("You are on the first page!\n")
+		fmt.Println("You are on the first page!")
 		return nil
 	}
 	locationPage, err := pokeapi.FetchLocationPage(cfg.Prev)
