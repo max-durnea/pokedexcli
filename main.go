@@ -10,7 +10,7 @@ import (
 type command struct {
 	name string
 	description string
-	callback func(cfg *Config) error
+	callback func(cfg *Config, args []string) error
 }
 type Config struct {
 	Next string
@@ -52,7 +52,7 @@ func main() {
 		cleaned_input:=cleanInput(input)
 		val,ok := Commands[cleaned_input[0]]
 		if ok {
-			val.callback(&locationConfig)
+			val.callback(&locationConfig,cleaned_input[1:])
 		}else{
 			fmt.Println("Unknown command")
 		}
@@ -66,13 +66,13 @@ func cleanInput(text string) []string{
 	return parts
 }
 
-func commandExit(cfg *Config) error {
+func commandExit(cfg *Config, args []string) error {
 	defer os.Exit(0)
 	fmt.Println("Closing the Pokedex... Goodbye!");
 	return nil
 }
 
-func commandHelp(cfg *Config) error {
+func commandHelp(cfg *Config, args []string) error {
 	fmt.Printf("Welcome to the Pokedex!\nUsage:\n\n")
 	for _, value := range Commands{
 		fmt.Printf("%v: %v\n",value.name, value.description)
@@ -80,7 +80,7 @@ func commandHelp(cfg *Config) error {
 	return nil
 }
 
-func commandMap(cfg *Config) error {
+func commandMap(cfg *Config, args []string) error {
 	locationPage, err := pokeapi.FetchLocationPage(cfg.Next)
 	if(err!=nil){
 		return err
@@ -94,7 +94,7 @@ func commandMap(cfg *Config) error {
 	}
 	return nil
 }
-func commandBmap(cfg *Config) error {
+func commandBmap(cfg *Config, args []string) error {
 	if(cfg.Next== "https://pokeapi.co/api/v2/location-area/?offset=20&limit=20") {
 		fmt.Println("You are on the first page!")
 		return nil
