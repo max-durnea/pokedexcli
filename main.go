@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"os"
 	"github.com/max-durnea/pokedexcli/internal/pokeapi"
+	"math/rand"
 )
 type command struct {
 	name string
@@ -17,7 +18,9 @@ type Config struct {
 	Prev string
 }
 var Commands map[string]command
+var Pokemons map[string]pokeapi.PokemonInfo
 func main() {
+	Pokemons = map[string]pokeapi.PokemonInfo{}
 	Commands = map[string]command{
         "exit": {
             name:        "exit",
@@ -43,6 +46,11 @@ func main() {
 			name: "explore",
 			description: "Lists pokemons from a location",
 			callback: commandExplore,
+		},
+		"catch": {
+			name: "catch",
+			description: "Throw a pokeball at the specified pokemon",
+			callback: commandCatch,
 		},
     }
 	locationConfig := Config{
@@ -129,4 +137,31 @@ func commandExplore(cfg *Config, args []string) error {
 	}
 	fmt.Println()
 	return nil
+}
+
+func commandCatch(cfg *Config, args []string) error {
+	url:=fmt.Sprintf("https://pokeapi.co/api/v2/pokemon/%v",args[0])
+	pokemon,err:=pokeapi.FetchPokemonInfo(url)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Throwing a Pokeball at %v...\n",pokemon.Name)
+	//fmt.Println(pokemon)
+	maxExp := 300
+	chance := 1.0 -float64(pokemon.BaseExperience/maxExp)
+	if(chance<0.05){
+		chance=0.05
+	}
+	roll := rand.Float64()
+	if roll < chance {
+		fmt.Printf("%v was caught!\n",pokemon.Name)
+		Pokemons[args[0]]=pokemon
+	}else{
+		fmt.Printf("%v escaped!\n",pokemon.Name)
+	}
+	return nil
+}
+
+func commandInspect(cfg *Config, args []string) error{
+	
 }
