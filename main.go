@@ -39,6 +39,11 @@ func main() {
 			description: "Lists the previous 20 locations everytime it's called",
 			callback: commandBmap,
 		},
+		"explore": {
+			name: "explore",
+			description: "Lists pokemons from a location",
+			callback: commandExplore,
+		},
     }
 	locationConfig := Config{
 		Next: "https://pokeapi.co/api/v2/location-area/",
@@ -108,5 +113,20 @@ func commandBmap(cfg *Config, args []string) error {
 	for _, value := range locationPage.Results {
 		fmt.Println(value.Name)
 	}
+	return nil
+}
+
+func commandExplore(cfg *Config, args []string) error {
+	fmt.Printf("Exploring %v...\n",args[0])
+	url:=fmt.Sprintf("https://pokeapi.co/api/v2/location-area/%v",args[0])
+	pokemons,err:=pokeapi.FetchPokemonList(url)
+	if err!=nil {
+		return err
+	}
+	fmt.Println("Found Pokemon:\n")
+	for _, value := range pokemons.PokemonEncounters{
+		fmt.Printf(" - %v\n",value.Pokemon.Name)
+	}
+	fmt.Println()
 	return nil
 }
