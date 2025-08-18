@@ -24,33 +24,43 @@ func main() {
 	Commands = map[string]command{
         "exit": {
             name:        "exit",
-            description: "Exit the Pokedex",
+            description: " Exit the Pokedex",
             callback:    commandExit,
         },
         "help": {
             name:        "help",
-            description: "Displays a help message",
+            description: " Displays a help message",
             callback:    commandHelp,
         },
 		"map": {
 			name: "map",
-			description: "Lists the next 20 locations everytime it's called",
+			description: " Lists the next 20 locations everytime it's called",
 			callback: commandMap,
 		},
 		"mapb": {
 			name: "mapb",
-			description: "Lists the previous 20 locations everytime it's called",
+			description: " Lists the previous 20 locations everytime it's called",
 			callback: commandBmap,
 		},
 		"explore": {
 			name: "explore",
-			description: "Lists pokemons from a location",
+			description: " Lists pokemons from a location",
 			callback: commandExplore,
 		},
 		"catch": {
 			name: "catch",
-			description: "Throw a pokeball at the specified pokemon",
+			description: " Throw a pokeball at the specified pokemon",
 			callback: commandCatch,
+		},
+		"inspect":{
+			name: "inspect",
+			description: " Inspect a caught pokemon",
+			callback: commandInspect,
+		},
+		"pokedex":{
+			name: "pokedex",
+			description: " List all caught pokemons",
+			callback: commandPokedex,
 		},
     }
 	locationConfig := Config{
@@ -163,5 +173,26 @@ func commandCatch(cfg *Config, args []string) error {
 }
 
 func commandInspect(cfg *Config, args []string) error{
-	
+	pokemon, ok := Pokemons[args[0]]
+	if !ok{
+		fmt.Println("You didn't catch this pokemon!")
+		return nil
+	}
+	fmt.Printf("Name: %v\nHeight: %v\nWeight: %v\nStats:\n",pokemon.Name,pokemon.Height,pokemon.Weight)
+	for _,stat := range pokemon.Stats{
+		fmt.Printf(" -%v: %v\n",stat.Stat.Name,stat.BaseStat)
+	}
+	fmt.Printf("Types:\n")
+	for _, t := range pokemon.Types{
+		fmt.Printf(" - %v\n",t.Type.Name)
+	}
+	return nil
+}
+
+func commandPokedex(cfg *Config, args []string) error{
+	fmt.Printf("Your Pokedex:\n")
+	for _,val := range Pokemons {
+		fmt.Printf(" - %v\n",val.Name)
+	}
+	return nil
 }
